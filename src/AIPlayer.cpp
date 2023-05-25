@@ -316,10 +316,6 @@ double AIPlayer::Poda_AlfaBeta(const Parchis &actual, int jugador, int profundid
     }
     else
     {
-        int dice_tmp = -1;
-        int id_piece_tmp = -1;
-        color c_piece_tmp = none;
-
         ParchisBros hijos = actual.getChildren();
 
         // Generemos los nuevos hijos
@@ -327,7 +323,7 @@ double AIPlayer::Poda_AlfaBeta(const Parchis &actual, int jugador, int profundid
         {
             if (this->jugador != actual.getCurrentPlayerId())
             { // Nodos MIN
-                double valor_actual = Poda_AlfaBeta(*it, jugador, profundidad + 1, profundidad_max, c_piece_tmp, id_piece_tmp, dice_tmp, alpha, beta, heuristic);
+                double valor_actual = Poda_AlfaBeta(*it, jugador, profundidad + 1, profundidad_max, c_piece, id_piece, dice, alpha, beta, heuristic);
 
                 if (valor_actual < beta)
                 {
@@ -341,15 +337,15 @@ double AIPlayer::Poda_AlfaBeta(const Parchis &actual, int jugador, int profundid
             }
             else
             { // Nodos MAX
-                double valor_actual = Poda_AlfaBeta(*it, jugador, profundidad + 1, profundidad_max, c_piece_tmp, id_piece_tmp, dice_tmp, alpha, beta, heuristic);
+                double valor_actual = Poda_AlfaBeta(*it, jugador, profundidad + 1, profundidad_max, c_piece, id_piece, dice, alpha, beta, heuristic);
 
                 if(alpha < valor_actual){
                     alpha = valor_actual;
 
                     if(profundidad == 0){
-                        c_piece = c_piece_tmp;
-                        id_piece = id_piece_tmp;
-                        dice = dice_tmp;
+                        c_piece = it.getMovedColor();
+                        id_piece = it.getMovedPieceId();
+                        dice = it.getMovedDiceValue();
                     }
                 }
 
