@@ -39,7 +39,7 @@ void AIPlayer::think(color &c_piece, int &id_piece, int &dice) const
     switch (id)
     {
     case 0:
-        thinkAleatorio(c_piece, id_piece, dice);
+        valor = Poda_AlfaBeta(*actual, jugador, 0, PROFUNDIDAD_ALFABETA, c_piece, id_piece, dice, alpha, beta, ValoracionTest);
         break;
     case 1:
         thinkAleatorioMasInteligente(c_piece, id_piece, dice);
