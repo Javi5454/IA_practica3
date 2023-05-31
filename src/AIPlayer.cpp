@@ -39,7 +39,7 @@ void AIPlayer::think(color &c_piece, int &id_piece, int &dice) const
     switch (id)
     {
     case 0:
-        valor = Poda_AlfaBeta(*actual, jugador, 0, PROFUNDIDAD_ALFABETA, c_piece, id_piece, dice, alpha, beta, ValoracionTest);
+        valor = Poda_AlfaBeta(*actual, jugador, 0, PROFUNDIDAD_ALFABETA, c_piece, id_piece, dice, alpha, beta, BestHeuristic);
         break;
     case 1:
         thinkAleatorioMasInteligente(c_piece, id_piece, dice);
@@ -339,10 +339,12 @@ double AIPlayer::Poda_AlfaBeta(const Parchis &actual, int jugador, int profundid
             { // Nodos MAX
                 double valor_actual = Poda_AlfaBeta(*it, jugador, profundidad + 1, profundidad_max, c_piece, id_piece, dice, alpha, beta, heuristic);
 
-                if(alpha < valor_actual){
+                if (alpha < valor_actual)
+                {
                     alpha = valor_actual;
 
-                    if(profundidad == 0){
+                    if (profundidad == 0)
+                    {
                         c_piece = it.getMovedColor();
                         id_piece = it.getMovedPieceId();
                         dice = it.getMovedDiceValue();
@@ -366,4 +368,100 @@ double AIPlayer::Poda_AlfaBeta(const Parchis &actual, int jugador, int profundid
             return beta;
         }
     }
+}
+
+//-------------
+// HEURÍSTICAS
+//-------------
+
+double AIPlayer::BestHeuristic(const Parchis &estado, int jugador)
+{
+    int winner = estado.getWinner();
+    int opponent = (jugador + 1) % 2;
+
+    if (jugador == winner)
+    { // Si hemos ganado
+        return gana;
+    }
+    else if (opponent == winner)
+    { // Si hemos perdido
+        return pierde;
+    }
+    else
+    { // En cualquier otro caso
+        int winner_score = 0;
+        int opponent_score = 0;
+
+        winner_score = scoring(estado, jugador);
+        opponent_score = scoring(estado, opponent);
+
+        return winner_score - opponent_score;
+    }
+}
+
+double AIPlayer::scoring(const Parchis &estado, int jugador)
+{
+    double puntuacion = 0;
+    vector<color> colores = estado.getPlayerColors(jugador);
+
+    // Recorro mis colores y las fichas de cada color
+    for (int i = 0; i < colores.size(); i++)
+    {
+        color c = colores[i];
+        // Recorro las fichas de cada color
+        int fichas_en_meta = estado.piecesAtGoal(c);
+        puntuacion += 90 * fichas_en_meta; // Damos 100 puntos a cada ficha en la casilla de llegada
+
+        if (estado.piecesAtHome(c) > 0)
+        {
+            puntuacion -= 333 * estado.piecesAtHome(c);
+        }
+
+        for (int j = 0; j < num_pieces; j++)
+        {
+            int distancia_a_meta = estado.distanceToGoal(c, j);
+            puntuacion -= distancia_a_meta * 2;
+
+            if (estado.isSafePiece(c, j))
+            {
+                puntuacion += 300;
+            }
+        }
+    }
+
+    pair<color, int> eaten_piece = estado.eatenPiece();
+
+    color c = eaten_piece.first;
+
+    if (c == colores[0] || c == colores[1])
+    {
+        puntuacion -= 500;
+    }
+    else if (c != none)
+    {
+        puntuacion += 300;
+    }
+
+    const vector<pair<color, int>> destroyed_pieces = estado.piecesDestroyedLastMove();
+
+    for (int i = 0; i < destroyed_pieces.size(); i++)
+    {
+        pair<color, int> current_pair = destroyed_pieces[i];
+
+        if (current_pair.first == colores[0] || current_pair.first == colores[1])
+        {
+            puntuacion -= 300;
+        }
+        else
+        {
+            puntuacion += 400;
+        }
+    }
+
+    if (estado.gameOver() and estado.getWinner() == jugador)
+    {
+        puntuacion += gana;
+    }
+
+    return puntuacion;
 }
