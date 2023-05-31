@@ -104,5 +104,8 @@ public:
     */
 
    static double scoring(const Parchis &estado, int jugador);
+
+   //Progresivas versiones de scoring
+   static double scoringV1(const Parchis &estado, int jugador);
 };
 #endif

@@ -392,8 +392,8 @@ double AIPlayer::BestHeuristic(const Parchis &estado, int jugador)
         int winner_score = 0;
         int opponent_score = 0;
 
-        winner_score = scoring(estado, jugador);
-        opponent_score = scoring(estado, opponent);
+        winner_score = scoringV1(estado, jugador);
+        opponent_score = scoringV1(estado, opponent);
 
         return winner_score - opponent_score;
     }
@@ -461,6 +461,21 @@ double AIPlayer::scoring(const Parchis &estado, int jugador)
     if (estado.gameOver() and estado.getWinner() == jugador)
     {
         puntuacion += gana;
+    }
+
+    return puntuacion;
+}
+
+double AIPlayer::scoringV1(const Parchis &estado, int jugador){
+    double puntuacion = 0;
+    vector<color> colores = estado.getPlayerColors(jugador);
+
+    //Recorro mis colores
+    for(int i = 0; i < colores.size(); i++){
+        //Recorro mis fichas
+        for(int j = 0; j < num_pieces; j++){
+            puntuacion -= estado.distanceToGoal(colores[i], j);
+        }
     }
 
     return puntuacion;
