@@ -106,6 +106,8 @@ public:
    static double scoring(const Parchis &estado, int jugador);
 
    //Progresivas versiones de scoring
-   static double scoringV1(const Parchis &estado, int jugador);
+   static double scoringV1(const Parchis &estado, int jugador); //Ninja 1
+   static double scoringV2(const Parchis &estado, int jugador); //Ninja 1 y 2
+   static double scoringV3(const Parchis &estado, int jugador); //Ninja 1, 2 y 3
 };
 #endif

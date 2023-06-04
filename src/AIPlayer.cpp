@@ -392,8 +392,8 @@ double AIPlayer::BestHeuristic(const Parchis &estado, int jugador)
         int winner_score = 0;
         int opponent_score = 0;
 
-        winner_score = scoringV1(estado, jugador);
-        opponent_score = scoringV1(estado, opponent);
+        winner_score = scoringV3(estado, jugador);
+        opponent_score = scoringV3(estado, opponent);
 
         return winner_score - opponent_score;
     }
@@ -466,16 +466,109 @@ double AIPlayer::scoring(const Parchis &estado, int jugador)
     return puntuacion;
 }
 
-double AIPlayer::scoringV1(const Parchis &estado, int jugador){
+double AIPlayer::scoringV1(const Parchis &estado, int jugador)
+{
     double puntuacion = 0;
     vector<color> colores = estado.getPlayerColors(jugador);
 
-    //Recorro mis colores
-    for(int i = 0; i < colores.size(); i++){
-        //Recorro mis fichas
-        for(int j = 0; j < num_pieces; j++){
+    // Recorro mis colores
+    for (int i = 0; i < colores.size(); i++)
+    {
+        // Recorro mis fichas
+        for (int j = 0; j < num_pieces; j++)
+        {
             puntuacion -= estado.distanceToGoal(colores[i], j);
         }
+    }
+
+    return puntuacion;
+}
+
+double AIPlayer::scoringV2(const Parchis &estado, int jugador)
+{
+    double puntuacion = 0;
+    vector<color> colores = estado.getPlayerColors(jugador);
+
+    // Recorro mis colores
+    for (int i = 0; i < colores.size(); i++)
+    {
+        // Recorro mis fichas
+        for (int j = 0; j < num_pieces; j++)
+        {
+            puntuacion -= estado.distanceToGoal(colores[i], j) * 2;
+
+            // Contamos las piezas que estan en un lugar seguro
+            if (estado.isSafePiece(colores[i], j))
+            {
+                puntuacion += 100; // 100 puntos por ficha
+            }
+        }
+
+        // Contamos las fichas en casa
+        puntuacion -= estado.piecesAtHome(colores[i]) * 200;
+
+        // Contamos las fichas en la meta
+        puntuacion += estado.piecesAtGoal(colores[i]) * 90;
+    }
+
+    // Contamos ahora los dados especiales
+    vector<int> dadosEspeciales = estado.getAvailableSpecialDices(jugador);
+
+    puntuacion += dadosEspeciales.size() * 50; // 50 puntos cada dado
+
+    return puntuacion;
+}
+
+double AIPlayer::scoringV3(const Parchis &estado, int jugador)
+{
+    double puntuacion = 0;
+    vector<color> colores = estado.getPlayerColors(jugador);
+
+    // Recorro mis colores
+    for (int i = 0; i < colores.size(); i++)
+    {
+        // Recorro mis fichas
+        for (int j = 0; j < num_pieces; j++)
+        {
+            puntuacion -= estado.distanceToGoal(colores[i], j) * 2;
+
+            // Contamos las piezas que estan en un lugar seguro
+            if (estado.isSafePiece(colores[i], j))
+            {
+                puntuacion += 100; // 100 puntos por ficha
+            }
+        }
+
+        // Contamos las fichas en casa
+        puntuacion -= estado.piecesAtHome(colores[i]) * 200;
+
+        // Contamos las fichas en la meta
+        puntuacion += estado.piecesAtGoal(colores[i]) * 90;
+    }
+
+    // Contamos ahora los dados especiales
+    vector<int> dadosEspeciales = estado.getAvailableSpecialDices(jugador);
+
+    puntuacion += dadosEspeciales.size() * 50; // 50 puntos cada dado
+
+    // TODO: Barrera y barrera con seguro
+
+    // Comprobamos si me han comido o si como yo
+    pair<color, int> eaten_piece = estado.eatenPiece();
+    color eaten_color = eaten_piece.first;
+
+    if (eaten_color == colores[0] || eaten_color == colores[1])
+    {
+        puntuacion -= 500; // Me han comido
+    }
+    else
+    {
+        puntuacion += 600; // He comido
+    }
+
+    //Si ganamos
+    if(estado.gameOver() && estado.getWinner() == jugador){
+        puntuacion += gana;
     }
 
     return puntuacion;
