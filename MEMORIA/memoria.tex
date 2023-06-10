@@ -1,0 +1,82 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{csvsimple}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+
+\renewcommand*\contentsname{Índice} %Nombre del indice
+
+\begin{document}
+\lstset{
+	basicstyle=\footnotesize,
+	extendedchars=true,
+	literate={á}{{\'a}}1 {ã}{{\~a}}1 {é}{{\'e}}1 {ú}{{\'u}}1 {ó}{{\'o}}1,
+	backgroundcolor=\color{black!5}
+	}
+	
+\begin{titlepage}
+	\centering
+	{\includegraphics[scale=0.5]{Logo_UGR.png}\par}
+	\vspace{1cm}
+	{\bfseries\Large Escuela T\'ecnica Superior de Ingeniería Informática y Telecomunicaciones \par}
+	\vspace{2.5cm}
+	{\scshape\Huge Pr\'actica 3: Búsqueda con adversario (Juegos) \par}
+	\vspace{3cm}
+	{\itshape\Large Doble Grado Ingeniería Informática y Matemáticas}
+	\vfill
+	{\Large Autores: \par}
+	{\Large Javier Gómez López \par}
+	\vfill
+	{\Large Junio 2023 \par}
+\end{titlepage}
+
+\thispagestyle{empty}
+\null
+\vfill
+
+%%Información sobre la licencia
+\parbox[t]{\textwidth}{
+  \includegraphics[scale=0.05]{by-nc-sa.png}\\[4pt]
+  \raggedright % Texto alineado a la izquierda
+  \sffamily\large
+  {\Large Este trabajo se distribuye bajo una licencia CC BY-NC-SA 4.0.}\\[4pt]
+  Eres libre de distribuir y adaptar el material siempre que reconozcas a los\\
+  autores originales del documento, no lo utilices para fines comerciales\\
+  y lo distribuyas bajo la misma licencia.\\[4pt]
+  \texttt{creativecommons.org/licenses/by-nc-sa/4.0/}
+}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Introducción}
+
+En esta práctica, buscamos implementar alguna de las técnicas con adversario en un entorno de juegos. En nuestro caso, usaremos una versión algo modificada del popular juego Parchís. Esta será determinista y dispondremos de dados especiales que se podrán adquirir conforme nos vamos moviendo por el tablero. Estos dados, inspirados en un popular juego de carreras, darán a las fichas sobre las que se utilicen poderes especiales con los que podrán realizar acciones especiales.
+
+\section{Análisis del problema}
+En nuestro caso, buscamos la implementación de un algortimo de Poda Alfa-Beta para buscar la mejor jugada posible siguiendo una heurística de diseño propio. Puesto que, dada la complejidad del juego, es computacionalmente imposible generar y manejar el árbol completo de posibilidades en cada instante de la partida, limitaremos la profundidad de nuestro árbol de decisiones a 6 nodos como máximo.
+
+Hay que tener en cuenta que, con las reglas modificadas, habrá que tener en cuenta más factores que los que pudiésemos considerar en una partida de Parchís normal.
+
+En general, a lo largo de las heurísticas que hemos ido planteando he implementando, hemos tenido en cuenta todas las casuísticas que definen una ventaja directa en ese momento de la partida, no aquellas que no sean medibles. Por ejemplo, es deseable tener una casilla en casa, pero no aporta nada tener fichas de un mismo color a una distancia pequeña.
+
+\section{Soluciones planteadas}
+A la hora de afrontar esta práctica, hemos seguido un enfoque progresivo. Puesto que la dificultad de los Ninjas iba en aumento, hemos ido haciendo distintas heurísticas por niveles, siendo la de niveles inferiores parte de las de niveles superiores. Por tanto, hemos ido añadiendo más factores de consideración a nuestra heurística, y en algunas ocasiones hemos modificado algún peso de la versión anterior.
+
+Cabe destacar, que en algún momento un cambio ha supuesto mayor pérdida que beneficio: un cambio que nos hiciese ganar contra el Ninja 2 podía hacernos perder con el Ninja 1, al cual ya habíamos ganado previamente. 
+
+Por ello, tras introducir cambios en nuestra heurística, comprobábamos que no nos hacían perder lo ganado con Ninjas anteriores.
+
+\end{document}
