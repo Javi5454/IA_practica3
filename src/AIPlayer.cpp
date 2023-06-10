@@ -399,72 +399,6 @@ double AIPlayer::BestHeuristic(const Parchis &estado, int jugador)
     }
 }
 
-double AIPlayer::scoring(const Parchis &estado, int jugador)
-{
-    double puntuacion = 0;
-    vector<color> colores = estado.getPlayerColors(jugador);
-
-    // Recorro mis colores y las fichas de cada color
-    for (int i = 0; i < colores.size(); i++)
-    {
-        color c = colores[i];
-        // Recorro las fichas de cada color
-        int fichas_en_meta = estado.piecesAtGoal(c);
-        puntuacion += 90 * fichas_en_meta; // Damos 100 puntos a cada ficha en la casilla de llegada
-
-        if (estado.piecesAtHome(c) > 0)
-        {
-            puntuacion -= 333 * estado.piecesAtHome(c);
-        }
-
-        for (int j = 0; j < num_pieces; j++)
-        {
-            int distancia_a_meta = estado.distanceToGoal(c, j);
-            puntuacion -= distancia_a_meta * 2;
-
-            if (estado.isSafePiece(c, j))
-            {
-                puntuacion += 300;
-            }
-        }
-    }
-
-    pair<color, int> eaten_piece = estado.eatenPiece();
-
-    color c = eaten_piece.first;
-
-    if (c == colores[0] || c == colores[1])
-    {
-        puntuacion -= 500;
-    }
-    else if (c != none)
-    {
-        puntuacion += 300;
-    }
-
-    const vector<pair<color, int>> destroyed_pieces = estado.piecesDestroyedLastMove();
-
-    for (int i = 0; i < destroyed_pieces.size(); i++)
-    {
-        pair<color, int> current_pair = destroyed_pieces[i];
-
-        if (current_pair.first == colores[0] || current_pair.first == colores[1])
-        {
-            puntuacion -= 300;
-        }
-        else
-        {
-            puntuacion += 400;
-        }
-    }
-
-    if (estado.gameOver() and estado.getWinner() == jugador)
-    {
-        puntuacion += gana;
-    }
-
-    return puntuacion;
-}
 
 double AIPlayer::scoringV1(const Parchis &estado, int jugador)
 {
@@ -521,55 +455,127 @@ double AIPlayer::scoringV2(const Parchis &estado, int jugador)
 
 double AIPlayer::scoringV3(const Parchis &estado, int jugador)
 {
-    double puntuacion = 0;
+    int ganador = estado.getWinner();
+    int oponente = (jugador + 1) % 2;
+
+    // Devolvemos si hemos ganado o perdido
+    if (ganador == jugador)
+    {
+        return gana;
+    }
+    else if (ganador == oponente)
+    {
+        return pierde;
+    }
+
+    // Cambiamos el enfoque, queremos priorizar el color que vaya mejor
+    double puntuacion_0 = 0;
+    double puntuacion_1 = 0;
     vector<color> colores = estado.getPlayerColors(jugador);
 
-    // Recorro mis colores
-    for (int i = 0; i < colores.size(); i++)
+    // Vamos con el primer color
+    color current_color = colores[0];
+
+    // Recorro mis fichas
+    for (int i = 0; i < num_pieces; i++)
     {
-        // Recorro mis fichas
-        for (int j = 0; j < num_pieces; j++)
+        puntuacion_0 -= estado.distanceToGoal(current_color, i) * 3; // Distancia a la meta
+
+        // Contamos las piezas que estan en un lugar seguro
+        if (estado.isSafePiece(current_color, i))
         {
-            puntuacion -= estado.distanceToGoal(colores[i], j) * 2;
-
-            // Contamos las piezas que estan en un lugar seguro
-            if (estado.isSafePiece(colores[i], j))
-            {
-                puntuacion += 100; // 100 puntos por ficha
-            }
+            puntuacion_0 += 70;
         }
+    }
 
-        // Contamos las fichas en casa
-        puntuacion -= estado.piecesAtHome(colores[i]) * 200;
+    // No queremos fichas en casa
+    puntuacion_0 -= estado.piecesAtHome(current_color) * 200;
 
-        // Contamos las fichas en la meta
-        puntuacion += estado.piecesAtGoal(colores[i]) * 90;
+    // Queremos fichas en la meta
+    puntuacion_0 += estado.piecesAtGoal(current_color) * 100;
+
+    // Pasamos a hacerlo con el otro color
+    current_color = colores[1];
+
+    for (int i = 0; i < num_pieces; i++)
+    {
+        puntuacion_1 -= estado.distanceToGoal(current_color, i) * 3; // Distancia a la meta
+
+        if (estado.isSafePiece(current_color, i))
+        {
+            puntuacion_1 += 70;
+        }
+    }
+
+    puntuacion_1 -= estado.piecesAtHome(current_color) * 200;
+    puntuacion_1 += estado.piecesAtGoal(current_color) * 100;
+
+    // Ahora pasamos a combinar ambas puntuaciones
+    int puntuacion_total;
+
+    if (puntuacion_0 > puntuacion_1)
+    {
+        puntuacion_total = 2*puntuacion_0 +  0.75 * puntuacion_1; // Damos la mitad del peso a la peor
+    }
+    else if (puntuacion_1 > puntuacion_0)
+    {
+        puntuacion_total = 2*puntuacion_1 + 0.75 * puntuacion_0;
+    }
+    else
+    {
+        puntuacion_total = puntuacion_0 + puntuacion_1;
     }
 
     // Contamos ahora los dados especiales
     vector<int> dadosEspeciales = estado.getAvailableSpecialDices(jugador);
 
-    puntuacion += dadosEspeciales.size() * 50; // 50 puntos cada dado
-
-    // TODO: Barrera y barrera con seguro
-
-    // Comprobamos si me han comido o si como yo
-    pair<color, int> eaten_piece = estado.eatenPiece();
-    color eaten_color = eaten_piece.first;
-
-    if (eaten_color == colores[0] || eaten_color == colores[1])
+    // Damos distintos valores a los distintos dados especiales
+    for (int i = 0; i < dadosEspeciales.size(); i++)
     {
-        puntuacion -= 500; // Me han comido
-    }
-    else
-    {
-        puntuacion += 600; // He comido
+        item_type current_dice = static_cast<item_type>(dadosEspeciales[i]);
+
+        switch (current_dice)
+        {
+        case star:
+            puntuacion_total += 400;
+            break;
+
+        case boo:
+            puntuacion_total += 100;
+            break;
+
+        case bullet:
+            puntuacion_total += 350;
+            break;
+
+        case red_shell:
+            puntuacion_total += 100;
+            break;
+
+        case blue_shell:
+            puntuacion_total += 100;
+            break;
+
+        case mushroom:
+            puntuacion_total += 150;
+            break;
+
+        case shock:
+            puntuacion_total += 140;
+            break;
+
+        case horn:
+            puntuacion_total += 50;
+            break;
+
+        case banana:
+            puntuacion_total += 10;
+            break;
+        default:
+            puntuacion_total += 0; // No suma
+            break;
+        }
     }
 
-    //Si ganamos
-    if(estado.gameOver() && estado.getWinner() == jugador){
-        puntuacion += gana;
-    }
-
-    return puntuacion;
+    return puntuacion_total;
 }

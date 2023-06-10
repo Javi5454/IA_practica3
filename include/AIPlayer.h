@@ -103,8 +103,6 @@ public:
      * @return double Puntuacion de un jugador en un determinado estado
     */
 
-   static double scoring(const Parchis &estado, int jugador);
-
    //Progresivas versiones de scoring
    static double scoringV1(const Parchis &estado, int jugador); //Ninja 1
    static double scoringV2(const Parchis &estado, int jugador); //Ninja 1 y 2
