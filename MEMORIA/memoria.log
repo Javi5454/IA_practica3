@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Arch Linux) (preloaded format=pdflatex 2023.4.12)  10 JUN 2023 20:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Arch Linux) (preloaded format=pdflatex 2023.4.12)  12 JUN 2023 13:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -404,33 +404,50 @@ Overfull \hbox (15.0pt too wide) in paragraph at lines 56--57
 [1 <./by-nc-sa.png>] (./memoria.toc
 LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 5.
+
+(/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
+LaTeX Font Info:    Trying to load font information for U+msb on input line 5.
+
+(/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+))
 \tf@toc=\write4
 \openout4 = `memoria.toc'.
 
- [2] [3] (./memoria.aux
+ [2] [3] [4] [5]
+(./memoria.aux
 LaTeX Info: Redefining \. on input line 8.
 LaTeX Info: Redefining \% on input line 8.
 ) ) 
 Here is how much of TeX's memory you used:
- 9551 strings out of 476025
- 162005 string characters out of 5796532
- 1856388 words of memory out of 5000000
- 29900 multiletter control sequences out of 15000+600000
- 515583 words of font info for 43 fonts, out of 8000000 for 9000
+ 9588 strings out of 476025
+ 162550 string characters out of 5796532
+ 1867388 words of memory out of 5000000
+ 29924 multiletter control sequences out of 15000+600000
+ 517887 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 72i,7n,77p,518b,365s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 72i,10n,77p,662b,387s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></u
-sr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texmf
--dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on memoria.pdf (4 pages, 430999 bytes).
+lic/amsfonts/cm/cmex10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></
+usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr5.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb>
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmtt12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/symbo
+ls/msbm10.pfb>
+Output written on memoria.pdf (6 pages, 506549 bytes).
 PDF statistics:
- 62 PDF objects out of 1000 (max. 8388607)
- 35 compressed objects within 1 object stream
+ 108 PDF objects out of 1000 (max. 8388607)
+ 63 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

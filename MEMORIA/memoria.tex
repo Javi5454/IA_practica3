@@ -79,4 +79,83 @@ Cabe destacar, que en algún momento un cambio ha supuesto mayor pérdida que be
 
 Por ello, tras introducir cambios en nuestra heurística, comprobábamos que no nos hacían perder lo ganado con Ninjas anteriores.
 
+\subsection{ScoringV1}
+El objetivo de esta heurística es una toma de contacto, queremos enfrentar el Ninja 1 que es el más sencillo. Por ello, esta heurística solo tiene un solo factor en cuenta: la distancia a la meta de todas mis fichas. 
+Cuanto más lejos estoy de la meta, peor es esa situación para mi ficha. Por tanto, en esta heurística recorro todas mis fichas y asigno el valor al nodo de menos la suma, es decir, 
+\[
+	p = - \left(\sum_{i=1}^{2} \sum_{j=1}^{3} d_{ij} \right)
+\]
+donde
+\begin{itemize}
+	\item \(p\) es la puntuación de mi nodo.
+	\item \(d_{ij}\) es la distancia a la meta de la ficha de color \(i\) y de id \(j\), con \(i = \{1,2,3,4\}\) y \(j = \{1,2,3\}\).
+\end{itemize}
+
+Las ventajas de esta heurística es su simplicidad y permite hacer un primer acercamiento al problema más general. Además, nos permite ganar al Ninja 1.
+
+Como desventajas, la principal es que no gana al resto de Ninjas. Esto se debe a que es demasiado simple, y no toma en cuenta más factores que si nos deberían de hacer tomar una decisión u otra, como el número de dados especiales y más factores que comentaremos más adelantes.
+
+\subsection{ScoringV2}
+Aquí ya las cosas se empiezan a poner interesantes. Poco a poco, nos vamos a introducir en heurísticas algo más complejas. En esta ocasión, además de usar el planteamiento de la versión anterior, consideramos otros factores: el número de piezas en casa, el número de piezas en la emta y la cantidad de dados especiales que tengamos. Así, nuestra puntuación en esta ocasión sería:
+\[
+	p = - \left(\sum_{i = 1}^2 \sum_{j=1}^{3} d_{ij} * 2 \right) + 100 * s  - 200 \cdot c + 90 \cdot g + 50 \cdot sd
+\]
+donde
+\begin{itemize}
+	\item \(p\) es la puntuación de mi nodo.
+	\item \(d_{ij}\) es la distancia a la meta de la ficha de color \(i\) y de id \(j\), con \(i = \{1,2,3,4\}\) y \(j = \{1,2,3\}\).
+	\item \(s\) es el número de casillas en un lugar seguro.
+	\item \(c\) es el número de casillas en casa.
+	\item \(g\) es el número de casillas en la meta.
+	\item \(sd\) es el número de dados especiales.
+\end{itemize}
+
+Las ventajas de esta heurística es que ya tiene en cuenta un mayor número de factores, lo cual nos permite ganar tanto al Ninja 1 como al Ninja 2. Comentar que los pesos se han hecho de manera totalmente arbitraria y mediante pruebas.
+
+Las desventajas son menores que en la anterior. La principal es que no conseguimos ganar al Ninja 3. Esto se debe a que estamos siendo muy toscos con los pesos. Por ejemplo, valoramos todos los dados especiales por igual, cuando no tienen el mismo efecto. Esto lo arreglaremos con la última y definitiva heurística.
+
+\subsection{ScoringV3}
+Esta es la joya de la corona de esta práctica. Usamos los conceptos que hemos visto que funcionan en la anterior versión y los refinamos, dando un pasito más. En esta ocasión, hacemos un pequeño cambio de concepto: no queremos que ganen mis dos colores, solo queremos uno. Por tanto, calcularemos las puntuaciones de nuestros dos colores por separado, y priorizaremos la que sea mayor en ese momento. Además, cambiamos los pesos que le damos a los dados especiales, siendo este distinto según eñ tipo de dado especial que estemos teniendo en cuenta. Así, nuestra heurística definitiva se calcula de la siguiente manera:
+\[
+	p_i  = - \left( \sum_{j = 1}^{3} d_{ij} \right) + 70*s_i
+\]
+donde 
+\begin{itemize}
+	\item \(p_i\) es la puntuación asociada al color \(i\).
+	\item \(d_{ij}\) es la distancia a la meta de la ficha de color \(i\) y de id \(j\), con \(i = \{1,2,3,4\}\) y \(j = \{1,2,3\}\).
+	\item \(s_i\) es el número de fichas en un lugar seguro del color \(i\).
+\end{itemize}
+y nuestra puntuación definitiva es 
+\[
+	p = 
+	\left\{
+	\begin{array}{lll}
+		2 \cdot \max (p_{i_1}, p_{i_2}) + 0.75 \cdot \min (p_{i_1}, p_{i_2}) + \sum_{t=1}^{n} \omega (x) \cdot sp_t & \text{si} & p_{i_1} \neq p_{i_2} \\
+		& &  \\
+		p_{i_1} + p_{i_2} + \sum_{t=1}^{n} \omega (x) \cdot sp_t & \text{si} & p_{i_1} = p_{i_2}
+	\end{array}
+	\right.
+\]
+donde
+\begin{itemize}
+	\item \(p_{i_j}\) es la puntuación del color \(i\) y como solo tenemos dos colores por jugador, \(j = \{1,2\}\).
+	\item \(sp_t\) es el dado especial \(t\), que como solo podemos tener 2, \(t = \{1,2\}\).
+	\item \(\omega (x)\) es una aplicación \(\omega : \mathbb{N} \to \mathbb{N}\) es una función peso tal que
+	\[
+		\omega (101) = 400 \qquad \omega (102) = 100 \qquad \omega (103) = 350 \qquad \omega (104) = 100
+	\]
+	\[
+		\omega (105) = 100 \qquad \omega (106) = 150 \qquad \omega (108) = 140 \qquad \omega (109) = 50 \qquad \omega (110) = 10
+	\]
+Esta heurística presenta un refinamiento respecto a la anterior. Damos una ponderación a los pesos, y benificiamos al color que vaya mejor de nuestro equipo. Esto es válido para ganar al Ninja 3. Notar que los pesos y las ponderaciones son totalmente arbitrarias, pero funcionan en un entorno real. Los consideramos como números mágicos.
+
+Como desventajas posibles, se podrían tener en cuenta más factores como las barreras, las fichas comidas y otros elementos, pero que no son necesarios para el caso que nos aplica.
+
+\section{Conclusiones}
+Siguiendo con las memorias de prácticas anteriores, quiero resaltar vuestra labor como docentes. La práctica me ha parecido muy instructiva, muy acorde a lo que hemos visto en teoría y en exámenes de prácticas de años anteriores. 
+
+De verdad, ojalá todos los profesores de la universidad fuesen como vosotros, porque entonces la UGR sería un referente a nivel mundial. Destacar vuestra dedicación, atención y continua disponibilidad, así como la cercanía con los alumnos.
+
+Muchas gracias por estas prácticas.
+\end{itemize}
 \end{document}

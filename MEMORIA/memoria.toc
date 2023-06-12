@@ -2,3 +2,7 @@
 \contentsline {section}{\numberline {1}Introducción}{3}{}%
 \contentsline {section}{\numberline {2}Análisis del problema}{3}{}%
 \contentsline {section}{\numberline {3}Soluciones planteadas}{3}{}%
+\contentsline {subsection}{\numberline {3.1}ScoringV1}{3}{}%
+\contentsline {subsection}{\numberline {3.2}ScoringV2}{3}{}%
+\contentsline {subsection}{\numberline {3.3}ScoringV3}{4}{}%
+\contentsline {section}{\numberline {4}Conclusiones}{5}{}%
